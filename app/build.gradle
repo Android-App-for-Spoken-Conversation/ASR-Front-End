@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.example.voicerecorder'
+    compileSdk 33  //The compile sdk version is the version of android your IDE (or other means of compiling I suppose)
+    // uses to make your app when you publish a .apk file
+
+    defaultConfig {
+        applicationId "com.example.voicerecorder"
+        minSdk 19  //The min sdk version is the earliest release of the Android SDK that your application can run on.
+        targetSdk 33 //The target sdk version is the version your application was targeted to run on
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+
+}

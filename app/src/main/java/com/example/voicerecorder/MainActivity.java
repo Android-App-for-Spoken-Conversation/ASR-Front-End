@@ -1,58 +1,64 @@
 package com.example.voicerecorder;
 import android.Manifest;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-
+import android.content.Context;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 
 import android.app.DownloadManager;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.textclassifier.TextLinks;
 import android.widget.TextView;
+import android.widget.*;
 import android.widget.Toast;
-//import android.Manifest.permission;
 
+import com.example.voicerecorder.R;
+
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     private static int MICROPHONE_PERMISSION_CODE=200; // when the user responds to the permission request,
     // the app can identify which permission request the user is responding to based on the request code.
     MediaRecorder mediaRecorder;   // for taking the instance of the media recorder
     MediaPlayer  mediaPlayer;    // for taking the instance of the media player
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         if(isMicrophonePresent()){
             getMicrophonePermission();
         }
-
-
-
-
     }
 
 
@@ -72,67 +78,77 @@ public class MainActivity extends AppCompatActivity {
        }
     }
 
-    //enough
-    public void btnStopPressed(View v){
+    public void sendPostRequest(String url, String requestBody) {
+        // Initialize OkHttp client
+        OkHttpClient client = new OkHttpClient();
+        Toast.makeText(this, "Intiated request" , Toast.LENGTH_LONG).show();
+        // Create the request body
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(mediaType, requestBody);
+    
+        // Create the request
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+    
+        // Send the request asynchronously
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                // Handle failure
+                e.printStackTrace();
+            }
+    
+            @Override
+            public void onResponse(okhttp3.Call call, Response response) throws IOException {
+                // Handle success
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    // Process the response body
+                    runOnUiThread(() -> {
+                        // Update UI with the response
+
+                    });
+                }
+            }
+        });
+    }
+    
+    public void btnStopPressed(View v) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
         mediaRecorder.stop();
         mediaRecorder.release();
-        mediaRecorder=null;
+        mediaRecorder = null;
         Toast.makeText(this, "Recording Stopped", Toast.LENGTH_SHORT).show();
 
-        // Upload the recorded file to the server
+        // Upload the recorded file to Firebase Storage and get its download URL
         String filePath = getRecordingFilePath();
-        if(filePath != null){
+        if (filePath != null) {
             File file = new File(filePath);
-            if(file.exists()){
-                OkHttpClient okHttpClient=new OkHttpClient();
-                RequestBody formbody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("file", "recording.wav",
-                                RequestBody.create(MediaType.parse("audio/wav"), file))
-                        .build();
-
-                try {
-                    Request request = new Request.Builder()
-                            .url("http://:8888")
-                            .post(formbody)
-                            .build();
-                    okHttpClient.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                            final TextView textView=findViewById(androidx.core.R.id.text); //textview
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        textView.setText(response.body().string());
-
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                            });
-
-                        }
-                    });
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+            if (file.exists()) {
+                Uri fileUri = Uri.fromFile(file);
+                StorageReference recordingRef = storageRef.child("recordings/" + file.getName());
+                recordingRef.putFile(fileUri)
+                        .addOnSuccessListener(taskSnapshot -> {
+                            recordingRef.getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                        String downloadUrl = uri.toString();
+                                        Toast.makeText(this, "Download URL: " + downloadUrl, Toast.LENGTH_LONG).show();
+                                        sendPostRequest("http://10.0.15.151:8888/speech","{\"downloadUrl\": \"downloadUrl\"}");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                                    });
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Failed to upload recording", Toast.LENGTH_SHORT).show();
+                        });
             }
         }
     }
-
 
 
     private boolean isMicrophonePresent(){
@@ -159,50 +175,7 @@ public class MainActivity extends AppCompatActivity {
         return file.getPath();
     }
 
-//    String filePath = getRecordingFilePath();
-//    File file = new File(filePath);
-//    if(getRecordingFilePath()!=null{}){
-//        OkHttpClient okHttpClient=new OkHttpClient();
-//        RequestBody formbody = new FormBody.Builder().add("file",file).build();
-//
-//        try {
-//            Request request = new Request.Builder().url("/").build();
-//            okHttpClient.newCall(request).enqueue(new Callback() {
-//                @Override
-//                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-//
-//                }
-//
-//                @Override
-//                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-//                    final TextView textView=findViewById(androidx.core.R.id.text); //textview
-//
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            try {
-//                                textView.setText(response.body().string());
-//
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//                    });
-//
-//                }
-//            });
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
+
 
     public void btnPlayPressed(View v){
         try{

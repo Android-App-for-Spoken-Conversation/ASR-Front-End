@@ -1,19 +1,28 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 android {
     namespace 'com.example.voicerecorder'
     compileSdk 33  //The compile sdk version is the version of android your IDE (or other means of compiling I suppose)
     // uses to make your app when you publish a .apk file
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java']
+            res.srcDirs = ['src/main/res']
+            // Add more directories if needed (e.g., assets, jniLibs)
+        }
 
+        // Add other source sets as needed (e.g., test, androidTest)
+    }
     defaultConfig {
         applicationId "com.example.voicerecorder"
         minSdk 19  //The min sdk version is the earliest release of the Android SDK that your application can run on.
         targetSdk 33 //The target sdk version is the version your application was targeted to run on
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,7 +46,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
-
+    implementation "com.squareup.okhttp3:okhttp:4.10.0"
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.google.firebase:firebase-storage:20.0.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3' // If using OkHttp
 
 }
+apply plugin: 'com.google.gms.google-services'

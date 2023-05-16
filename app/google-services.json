@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "576969563361",
+    "project_id": "voicerecorder-c9c51",
+    "storage_bucket": "voicerecorder-c9c51.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576969563361:android:eb9910c080ef95ab5d6ba0",
+        "android_client_info": {
+          "package_name": "com.example.voicerecorder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "576969563361-4ja03kmvi90bi5mcrhpqo4lnvecind9a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzh0d88d-Az5l0KbRXyiTn73R0ShBzANs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576969563361-4ja03kmvi90bi5mcrhpqo4lnvecind9a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

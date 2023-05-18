@@ -1,12 +1,17 @@
 package com.example.voicerecorder;
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import android.content.Context;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
@@ -78,13 +83,12 @@ public class MainActivity extends AppCompatActivity {
        }
     }
 
-    public void sendPostRequest(String url, String requestBody) {
+    public void sendPostRequest(String url, JSONObject requestBody,Context context) {
         // Initialize OkHttp client
         OkHttpClient client = new OkHttpClient();
-        Toast.makeText(this, "Intiated request" , Toast.LENGTH_LONG).show();
         // Create the request body
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(mediaType, requestBody);
+        RequestBody body = RequestBody.create(mediaType, requestBody.toString());
     
         // Create the request
         Request request = new Request.Builder()
@@ -94,24 +98,34 @@ public class MainActivity extends AppCompatActivity {
     
         // Send the request asynchronously
         client.newCall(request).enqueue(new okhttp3.Callback() {
+
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                // Handle failure
                 e.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
+                });
             }
     
             @Override
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
                 // Handle success
+                Log.d(TAG, response.toString());
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     // Process the response body
                     runOnUiThread(() -> {
                         // Update UI with the response
-
+                        Toast.makeText(context,responseBody,Toast.LENGTH_LONG).show();
+                    });
+                }else{
+                    runOnUiThread(() -> {
+                        // Update UI with the response
+                        Toast.makeText(context,"not successful",Toast.LENGTH_LONG).show();
                     });
                 }
             }
+        
         });
     }
     
@@ -137,7 +151,14 @@ public class MainActivity extends AppCompatActivity {
                                     .addOnSuccessListener(uri -> {
                                         String downloadUrl = uri.toString();
                                         Toast.makeText(this, "Download URL: " + downloadUrl, Toast.LENGTH_LONG).show();
-                                        sendPostRequest("http://10.0.15.151:8888/speech","{\"downloadUrl\": \"downloadUrl\"}");
+                                        String jsonBody = "{\"downloadUrl\": \"" + downloadUrl + "\"}";
+                                        JSONObject requestBody = new JSONObject();
+                                        try {
+                                            requestBody.put("fileUrl", downloadUrl);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        sendPostRequest("http://10.0.8.84:8888/speech",requestBody,this);
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(this, "Failed to get download URL", Toast.LENGTH_SHORT).show();

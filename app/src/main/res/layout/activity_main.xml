@@ -4,50 +4,104 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/system_accent3_200"
+    android:background="#F0100F0F"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:drawableLeft="@drawable/baseline_keyboard_voice_24"
-        android:onClick="btnRecordPressed"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button4"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
+    <!-- Title -->
 
-    <Button
-        android:id="@+id/button3"
+    <!-- Text Box -->
+
+    <!-- Button 1 -->
+
+    <!-- Button 2 -->
+
+    <!-- Button 3 -->
+
+    <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:drawableLeft="@drawable/baseline_stop_24"
-        android:onClick="btnStopPressed"
+        android:text="IIIT DHARWAD"
+        android:textColor="#8B2FA5"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button4"
+        app:layout_constraintHorizontal_bias="0.437"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.191" />
+        app:layout_constraintVertical_bias="0.062" />
+
+    <TextView
+        android:id="@+id/Output"
+        android:layout_width="314dp"
+        android:layout_height="50dp"
+        android:background="#75706161"
+        android:hint="Hi ;) Speak anything"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.426"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.402" />
+
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/recButton"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:background="@color/black"
+        android:drawableLeft="@drawable/baseline_keyboard_voice_24"
+        android:drawablePadding="1dp"
+        android:onClick="btnRecordPressed"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.661" />
+
+    <Button
+        android:id="@+id/playButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/black"
+        android:background="#1B1818"
         android:drawableLeft="@drawable/baseline_play_arrow_24"
+        android:drawablePadding="4dp"
         android:onClick="btnPlayPressed"
+        android:paddingLeft="22dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.191" />
+        app:layout_constraintVertical_bias="0.563" />
+
+
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:background="@color/black"
+        android:drawableLeft="@drawable/baseline_stop_24"
+        android:drawablePadding="1dp"
+        android:onClick="btnStopPressed"
+        android:paddingLeft="5dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text=""
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.661" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
         if(isMicrophonePresent()){
             getMicrophonePermission();
         }
@@ -76,7 +75,12 @@ public class MainActivity extends AppCompatActivity {
            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
            mediaRecorder.prepare();
            mediaRecorder.start();
+           Button recButton = findViewById(R.id.recButton);
+           Button stopButton = findViewById(R.id.stopButton);
+           recButton.setVisibility(View.GONE);
+           stopButton.setVisibility(View.VISIBLE);
            Toast.makeText(this, "Recording Started", Toast.LENGTH_SHORT).show();
+
        }
        catch(Exception e){
            e.printStackTrace();
@@ -104,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 runOnUiThread(() -> {
                     Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
+                    TextView Outbox = findViewById(R.id.Output);
+                    Outbox.setText(e.getMessage());
                 });
             }
     
@@ -117,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         // Update UI with the response
                         Toast.makeText(context,responseBody,Toast.LENGTH_LONG).show();
+                        TextView Outbox = findViewById(R.id.Output);
+                        Outbox.setText(responseBody);
                     });
                 }else{
                     runOnUiThread(() -> {
@@ -137,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
         mediaRecorder.release();
         mediaRecorder = null;
         Toast.makeText(this, "Recording Stopped", Toast.LENGTH_SHORT).show();
+        Button recButton = findViewById(R.id.recButton);
+        Button stopButton = findViewById(R.id.stopButton);
+        recButton.setVisibility(View.VISIBLE);
+        stopButton.setVisibility(View.GONE);
 
         // Upload the recorded file to Firebase Storage and get its download URL
         String filePath = getRecordingFilePath();
@@ -158,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-                                        sendPostRequest("http://10.0.8.84:8888/speech",requestBody,this);
+                                        sendPostRequest("http://10.0.1.125:8888/speech",requestBody,this);
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(this, "Failed to get download URL", Toast.LENGTH_SHORT).show();

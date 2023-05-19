@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
+
 import android.content.Context;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
@@ -44,6 +46,10 @@ import java.io.IOException;
 import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
+    MediaRecorder mediaRecorder;   // for taking the instance of the media recorder
+    MediaPlayer  mediaPlayer;    // for taking the instance of the media player
+
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -52,13 +58,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static int MICROPHONE_PERMISSION_CODE=200; // when the user responds to the permission request,
     // the app can identify which permission request the user is responding to based on the request code.
-    MediaRecorder mediaRecorder;   // for taking the instance of the media recorder
-    MediaPlayer  mediaPlayer;    // for taking the instance of the media player
+
+    private TextAnimationLooper textAnimationLooper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         if(isMicrophonePresent()){
             getMicrophonePermission();
@@ -75,12 +80,17 @@ public class MainActivity extends AppCompatActivity {
            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
            mediaRecorder.prepare();
            mediaRecorder.start();
-           Button recButton = findViewById(R.id.recButton);
+           TextView status = findViewById(R.id.status);
            Button stopButton = findViewById(R.id.stopButton);
+           Button recButton = findViewById(R.id.recButton);
+           Button playButton = findViewById(R.id.playButton);
+           playButton.setEnabled(false);
+           status.setVisibility(View.VISIBLE);
+           textAnimationLooper = new TextAnimationLooper(status,"Recording Started");
+           textAnimationLooper.startAnimation();
            recButton.setVisibility(View.GONE);
            stopButton.setVisibility(View.VISIBLE);
-           Toast.makeText(this, "Recording Started", Toast.LENGTH_SHORT).show();
-
+//           Toast.makeText(this, "Recording Started", Toast.LENGTH_SHORT).show();
        }
        catch(Exception e){
            e.printStackTrace();
@@ -99,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 .url(url)
                 .post(body)
                 .build();
-    
         // Send the request asynchronously
         client.newCall(request).enqueue(new okhttp3.Callback() {
 
@@ -108,8 +117,12 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 runOnUiThread(() -> {
                     Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
-                    TextView Outbox = findViewById(R.id.Output);
-                    Outbox.setText(e.getMessage());
+                    TextView output = findViewById(R.id.Output);
+                    output.setText(e.getMessage());
+                    TextView status = findViewById(R.id.status);
+                    status.setVisibility(View.VISIBLE);
+                    textAnimationLooper.stopAnimation();
+                    status.setText("Please start recording");
                 });
             }
     
@@ -122,8 +135,12 @@ public class MainActivity extends AppCompatActivity {
                     // Process the response body
                     runOnUiThread(() -> {
                         // Update UI with the response
-                        Toast.makeText(context,responseBody,Toast.LENGTH_LONG).show();
+                        // Toast.makeText(context,responseBody,Toast.LENGTH_LONG).show();
                         TextView Outbox = findViewById(R.id.Output);
+                        TextView status = findViewById(R.id.status);
+                        status.setVisibility(View.VISIBLE);
+                        textAnimationLooper.stopAnimation();
+                        status.setText("Please start Recording");
                         Outbox.setText(responseBody);
                     });
                 }else{
@@ -140,15 +157,21 @@ public class MainActivity extends AppCompatActivity {
     public void btnStopPressed(View v) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-
+        Button playButton = findViewById(R.id.playButton);
+        playButton.setEnabled(true);
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
-        Toast.makeText(this, "Recording Stopped", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Recording Stopped", Toast.LENGTH_SHORT).show();
         Button recButton = findViewById(R.id.recButton);
         Button stopButton = findViewById(R.id.stopButton);
         recButton.setVisibility(View.VISIBLE);
         stopButton.setVisibility(View.GONE);
+        TextView status = findViewById(R.id.status);
+        status.setVisibility(View.VISIBLE);
+        textAnimationLooper.stopAnimation();
+        textAnimationLooper.setText("Generating Text");
+        textAnimationLooper.startAnimation();
 
         // Upload the recorded file to Firebase Storage and get its download URL
         String filePath = getRecordingFilePath();
@@ -162,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                             recordingRef.getDownloadUrl()
                                     .addOnSuccessListener(uri -> {
                                         String downloadUrl = uri.toString();
-                                        Toast.makeText(this, "Download URL: " + downloadUrl, Toast.LENGTH_LONG).show();
+//                                        Toast.makeText(this, "Download URL: " + downloadUrl, Toast.LENGTH_LONG).show();
                                         String jsonBody = "{\"downloadUrl\": \"" + downloadUrl + "\"}";
                                         JSONObject requestBody = new JSONObject();
                                         try {
@@ -170,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-                                        sendPostRequest("http://10.0.1.125:8888/speech",requestBody,this);
+                                        sendPostRequest("http://10.0.8.184:8888/speech",requestBody,this);
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
@@ -216,12 +239,26 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.setDataSource(getRecordingFilePath());
             mediaPlayer.prepare();
             mediaPlayer.start();
+            Button pauseButton = findViewById(R.id.pauseButton);
+            Button playButton = findViewById(R.id.playButton);
+            playButton.setVisibility(View.GONE);
+            pauseButton.setVisibility(View.VISIBLE);
             Toast.makeText(this, "Recording is Playing", Toast.LENGTH_SHORT).show();
         }
         catch(Exception e){
             e.printStackTrace();
         }
     }
+
+    public void btnPausePressed(View V){
+        Button playButton = findViewById(R.id.playButton);
+        Button pauseButton = findViewById(R.id.pauseButton);
+        playButton.setVisibility(View.VISIBLE);
+        pauseButton.setVisibility(View.GONE);
+        mediaPlayer.pause();
+//        Toast.makeText(this,"insie pause",Toast.LENGTH_SHORT).show();
+    }
+
 
     //version 2022.1.1.21
 }

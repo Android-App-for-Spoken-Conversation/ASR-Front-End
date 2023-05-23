@@ -7,15 +7,6 @@
     android:background="#F0100F0F"
     tools:context=".MainActivity">
 
-    <!-- Title -->
-
-    <!-- Text Box -->
-
-    <!-- Button 1 -->
-
-    <!-- Button 2 -->
-
-    <!-- Button 3 -->
 
     <TextView
         android:id="@+id/title"
@@ -31,32 +22,44 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.062" />
 
-    <TextView
-        android:id="@+id/Output"
-        android:layout_width="314dp"
-        android:layout_height="50dp"
-        android:background="#75706161"
-        android:hint="Hi ;) Speak anything"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:padding="8dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.426"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.402" />
-
+        app:layout_constraintVertical_bias="0.402"
+        >
+        <TextView
+            android:id="@+id/Output"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="20sp"
+            android:background="#75706161"
+            android:text="Hi Speak anything"
+            android:gravity="center"
+            />
+    </LinearLayout>
 
     <Button
         android:id="@+id/recButton"
         android:layout_width="50dp"
         android:layout_height="40dp"
-        android:background="@color/black"
+        android:background="@drawable/rounded_lg"
         android:drawableLeft="@drawable/baseline_keyboard_voice_24"
         android:drawablePadding="1dp"
         android:onClick="btnRecordPressed"
         android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:shadowDx="2"
+        android:shadowColor="@color/white"
+        android:shadowDy="2"
+        android:shadowRadius="10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -68,7 +71,7 @@
         android:id="@+id/playButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#1B1818"
+        android:background="@drawable/rounded_lg"
         android:drawableLeft="@drawable/baseline_play_arrow_24"
         android:drawablePadding="4dp"
         android:onClick="btnPlayPressed"
@@ -81,12 +84,28 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.563" />
 
+    <Button
+        android:id="@+id/pauseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_lg"
+        android:drawableLeft="@android:drawable/ic_media_pause"
+        android:drawablePadding="4dp"
+        android:onClick="btnPausePressed"
+        android:paddingLeft="25dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.563" />
 
     <Button
         android:id="@+id/stopButton"
         android:layout_width="50dp"
         android:layout_height="40dp"
-        android:background="@color/black"
+        android:background="@drawable/rounded_lg"
         android:drawableLeft="@drawable/baseline_stop_24"
         android:drawablePadding="1dp"
         android:onClick="btnStopPressed"
@@ -102,6 +121,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.661" />
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:paddingLeft="50dp"
+        android:paddingEnd="50dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.426"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.802"
+        >
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#75706161"
+            android:text="No record in progress"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="8dp"/>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

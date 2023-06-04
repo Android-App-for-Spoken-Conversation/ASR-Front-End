@@ -41,7 +41,7 @@ To run the ASR-Frontend application on your local machine, follow these steps:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/your-username/ASR-Frontend.git
+   git clone https://github.com/AN461/ASR-Front-End.git
    ```
 
 2. Open the project in Android Studio.

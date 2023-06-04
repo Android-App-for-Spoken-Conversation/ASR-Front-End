@@ -72,4 +72,4 @@ ASR-Frontend is released under the [MIT License](LICENSE). Feel free to use, mod
 
 ## Contact
 
-If you have any questions or suggestions regarding the ASR-Frontend application, feel free to contact the development team at [your-email@example.com](mailto:your-email@example.com).
+If you have any questions or suggestions regarding the ASR-Frontend application, feel free to contact the development team at (mailto:20bcs048@iiitdwd.ac.in, 20bcs112@iiitdwd.ac.in).
